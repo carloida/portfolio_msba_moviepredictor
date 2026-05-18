@@ -256,11 +256,18 @@ def infer_release_year(df: pd.DataFrame) -> Optional[pd.Series]:
         if candidate in df.columns:
             return pd.to_numeric(df[candidate], errors="coerce")
 
-    date_candidates = ["release_date", "Release date", "releaseDate", "Movie release date"]
+    date_candidates = ["release_date", "Release date", "releaseDate", "Movie release date", "production_date"]
     for candidate in date_candidates:
         if candidate in df.columns:
             return pd.to_datetime(df[candidate], errors="coerce").dt.year
     return None
+
+
+def parse_money_column(series: pd.Series) -> pd.Series:
+    return pd.to_numeric(
+        series.astype(str).str.replace(r"[$,]", "", regex=True).str.strip(),
+        errors="coerce",
+    )
 
 
 def year_group(year: float) -> str:
@@ -322,8 +329,8 @@ def genre_trends() -> Dict[str, Any]:
         .str.strip()
         .replace("", "Unknown")
     )
-    working["Production budget $"] = pd.to_numeric(working["Production budget $"], errors="coerce")
-    working["Worldwide gross $"] = pd.to_numeric(working["Worldwide gross $"], errors="coerce")
+    working["Production budget $"] = parse_money_column(working["Production budget $"])
+    working["Worldwide gross $"] = parse_money_column(working["Worldwide gross $"])
     working = working[(working["Production budget $"] > 0) & working["Worldwide gross $"].notna()]
     working["gross_margin"] = (
         working["Worldwide gross $"] - working["Production budget $"]
