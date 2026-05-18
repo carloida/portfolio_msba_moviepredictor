@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getGenreTrends } from "../api";
+import { displayGenre, formatMoney, imageForGenre } from "../genreAssets";
 import type { GenreTrendRecord, MovieInput } from "../types";
 
 type Props = {
@@ -17,34 +18,6 @@ type GenreSummary = {
 };
 
 const DEFAULT_COMPARE_GENRES = ["Horror", "Action", "Drama"];
-
-const genreImageMap: Record<string, string> = {
-  Action: "/genre-images/Action.png",
-  Adventure: "/genre-images/Adventure.png",
-  Animation: "/genre-images/Animation.png",
-  Biography: "/genre-images/Biography.png",
-  Comedy: "/genre-images/Comedy.png",
-  Crime: "/genre-images/Crime.png",
-  Documentary: "/genre-images/Documentary.png",
-  Drama: "/genre-images/Drama.png",
-  Family: "/genre-images/Family.png",
-  Fantasy: "/genre-images/Fantasy.png",
-  "Film-Noir": "/genre-images/Film-Noir.png",
-  History: "/genre-images/History.png",
-  Horror: "/genre-images/Horror.png",
-  Music: "/genre-images/Music.png",
-  Musical: "/genre-images/Musical.png",
-  Mystery: "/genre-images/Mystery.png",
-  News: "/genre-images/News.png",
-  Romance: "/genre-images/Romance.png",
-  "Sci-Fi": "/genre-images/Sci-Fi.png",
-  Sport: "/genre-images/Sport.png",
-  Thriller: "/genre-images/Thriller.png",
-  War: "/genre-images/War.png",
-  Western: "/genre-images/Western.png",
-  "\\N": "/genre-images/Unknown.png",
-  Unknown: "/genre-images/Unknown.png"
-};
 
 export default function GenreTrendExplorer({ baselineInput }: Props) {
   const [records, setRecords] = useState<GenreTrendRecord[]>([]);
@@ -279,27 +252,9 @@ function buildGenreSummary(genre: string, rows: GenreTrendRecord[]): GenreSummar
   };
 }
 
-function imageForGenre(genre: string) {
-  return genreImageMap[genre] || genreImageMap.Unknown;
-}
-
-function displayGenre(genre: string) {
-  return genre === "\\N" ? "Unknown" : genre;
-}
-
 function formatPercent(value: number | undefined) {
   if (value === undefined || Number.isNaN(value)) {
     return "N/A";
   }
   return `${Math.round(value * 100)}%`;
-}
-
-function formatMoney(value: number | undefined) {
-  if (value === undefined || Number.isNaN(value)) {
-    return "N/A";
-  }
-  if (value >= 1_000_000_000) {
-    return `$${(value / 1_000_000_000).toFixed(1)}B`;
-  }
-  return `$${Math.round(value / 1_000_000)}M`;
 }

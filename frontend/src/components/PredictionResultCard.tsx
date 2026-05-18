@@ -1,39 +1,54 @@
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis } from "recharts";
-import type { PredictionResponse } from "../types";
+import { displayGenre, formatMoney, imageForGenre } from "../genreAssets";
+import type { MovieInput, PredictionResponse } from "../types";
 
 type Props = {
+  movieInput: MovieInput;
   prediction: PredictionResponse | null;
   loading: boolean;
   error: string | null;
 };
 
-export default function PredictionResultCard({ prediction, loading, error }: Props) {
+export default function PredictionResultCard({ movieInput, prediction, loading, error }: Props) {
   const probability = prediction ? Math.round(prediction.hit_probability * 100) : 0;
   const chartData = [{ name: "Probability", value: probability }];
 
   return (
-    <aside className="card flex min-h-[520px] flex-col p-5 sm:p-6">
-      <div className="border-b border-line pb-5">
-        <h2 className="text-2xl font-bold text-nusNavy">Prediction Result</h2>
-        <p className="mt-2 text-sm leading-6 text-muted">
+    <aside className="card flex min-h-[520px] flex-col overflow-hidden">
+      <div className="relative min-h-[220px]">
+        <img src={imageForGenre(movieInput.primary_genre)} alt={`${displayGenre(movieInput.primary_genre)} genre artwork`} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
+        <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-5 text-white sm:p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">Prediction Result</p>
+          <h2 className="mt-2 text-3xl font-bold">{displayGenre(movieInput.primary_genre)} investment screen</h2>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <OverlayMetric label="Year" value={String(movieInput.release_year)} />
+            <OverlayMetric label="Budget" value={formatMoney(movieInput.production_budget)} />
+            <OverlayMetric label="Runtime" value={`${movieInput.runtime_minutes} min`} />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-b border-line p-5 sm:p-6">
+        <p className="text-sm leading-6 text-muted">
           Results are calibrated against the model decision threshold, not against guaranteed box office outcomes.
         </p>
       </div>
 
       {loading && (
-        <div className="mt-8 rounded-lg border border-line bg-panel p-5 text-sm font-medium text-muted">
+        <div className="mx-5 mt-6 rounded-lg border border-line bg-panel p-5 text-sm font-medium text-muted sm:mx-6">
           Running the saved preprocessing and classifier pipeline...
         </div>
       )}
 
       {error && (
-        <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+        <div className="mx-5 mt-6 rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700 sm:mx-6">
           {error}
         </div>
       )}
 
       {!loading && !error && !prediction && (
-        <div className="mt-8 rounded-lg border border-dashed border-line bg-panel p-6 text-center">
+        <div className="mx-5 mt-6 rounded-lg border border-dashed border-line bg-panel p-6 text-center sm:mx-6">
           <p className="text-lg font-semibold text-nusNavy">No prediction yet</p>
           <p className="mt-2 text-sm leading-6 text-muted">
             Fill the movie profile or choose a sample profile, then run the predictor.
@@ -42,7 +57,7 @@ export default function PredictionResultCard({ prediction, loading, error }: Pro
       )}
 
       {prediction && !loading && (
-        <div className="mt-6 flex flex-1 flex-col gap-5">
+        <div className="flex flex-1 flex-col gap-5 p-5 sm:p-6">
           <div className="rounded-lg bg-nusNavy p-6 text-white">
             <p className="text-sm font-semibold text-white/70">Hit probability</p>
             <div className="mt-3 flex items-end justify-between gap-4">
@@ -75,6 +90,15 @@ export default function PredictionResultCard({ prediction, loading, error }: Pro
         </div>
       )}
     </aside>
+  );
+}
+
+function OverlayMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-white/14 p-3 text-white ring-1 ring-white/25 backdrop-blur">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">{label}</p>
+      <p className="mt-1 text-sm font-bold text-white">{value}</p>
+    </div>
   );
 }
 

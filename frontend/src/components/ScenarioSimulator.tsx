@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { predictMovie, predictScenario } from "../api";
+import { displayGenre, formatMoney, genreOptions, imageForGenre } from "../genreAssets";
 import type { MovieInput, PredictionResponse, ScenarioResponse } from "../types";
 
 type Props = {
@@ -61,13 +62,18 @@ export default function ScenarioSimulator({ baselineInput, baselinePrediction }:
           </p>
         </div>
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="card p-5">
+          <div className="card overflow-hidden">
+            <div className="grid md:grid-cols-2">
+              <ScenarioImageCard title="Original profile" movie={baselineInput} probability={baselinePrediction?.hit_probability} />
+              <ScenarioImageCard title="Adjusted profile" movie={adjusted} probability={scenario?.adjusted.hit_probability} />
+            </div>
+            <div className="p-5">
             <div className="grid gap-5 sm:grid-cols-2">
               <Control label="Production Budget" value={adjusted.production_budget} onChange={(next) => setAdjusted({ ...adjusted, production_budget: next })} min={100000} max={250000000} step={100000} />
               <label className="block">
                 <span className="field-label">Primary Genre</span>
                 <select className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm" value={adjusted.primary_genre} onChange={(e) => setAdjusted({ ...adjusted, primary_genre: e.target.value })}>
-                  {["Action", "Adventure", "Animation", "Comedy", "Drama", "Horror", "Romance", "Sci-Fi", "Thriller", "Unknown"].map((genre) => <option key={genre}>{genre}</option>)}
+                  {genreOptions.map((genre) => <option key={genre}>{displayGenre(genre)}</option>)}
                 </select>
               </label>
               <label className="block">
@@ -79,6 +85,7 @@ export default function ScenarioSimulator({ baselineInput, baselinePrediction }:
               {loading ? "Running scenario..." : "Run Scenario"}
             </button>
             {!baselinePrediction && <p className="mt-3 text-xs text-muted">Run the main prediction first to establish an original baseline.</p>}
+            </div>
           </div>
           <div className="card p-5">
             {error && <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
@@ -131,6 +138,34 @@ export default function ScenarioSimulator({ baselineInput, baselinePrediction }:
         </div>
       </div>
     </section>
+  );
+}
+
+function ScenarioImageCard({ title, movie, probability }: { title: string; movie: MovieInput; probability?: number }) {
+  return (
+    <div className="relative min-h-[230px] overflow-hidden border-b border-line md:border-b-0 md:border-r">
+      <img src={imageForGenre(movie.primary_genre)} alt={`${displayGenre(movie.primary_genre)} genre artwork`} className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+      <div className="relative z-10 flex min-h-[230px] flex-col justify-end p-5 text-white">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/70">{title}</p>
+        <h3 className="mt-2 text-2xl font-bold">{displayGenre(movie.primary_genre)}</h3>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <OverlayMetric label="Year" value={String(movie.release_year)} />
+          <OverlayMetric label="Budget" value={formatMoney(movie.production_budget)} />
+          <OverlayMetric label="Runtime" value={`${movie.runtime_minutes} min`} />
+          <OverlayMetric label="Probability" value={probability === undefined ? "Pending" : `${Math.round(probability * 100)}%`} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OverlayMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg bg-white/14 p-3 text-white ring-1 ring-white/25 backdrop-blur">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">{label}</p>
+      <p className="mt-1 text-sm font-bold text-white">{value}</p>
+    </div>
   );
 }
 

@@ -40,7 +40,7 @@ export default function App() {
         <HeroSection />
         <section id="prediction" className="section-shell grid gap-6 py-12 lg:grid-cols-[1.15fr_0.85fr]">
           <MovieInputForm value={movieInput} onChange={setMovieInput} onSubmit={handlePredict} loading={loading} />
-          <PredictionResultCard prediction={prediction} loading={loading} error={error} />
+          <PredictionResultCard movieInput={movieInput} prediction={prediction} loading={loading} error={error} />
         </section>
         <ScenarioSimulator baselineInput={baselineInput} baselinePrediction={prediction} />
         <GenreTrendExplorer baselineInput={baselineInput} />
