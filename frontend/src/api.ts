@@ -1,4 +1,4 @@
-import type { GenreTrendResponse, ModelInfo, MovieInput, PredictionResponse, ScenarioResponse } from "./types";
+import type { GenreTrendResponse, LlmInsightRequest, LlmInsightResponse, ModelInfo, MovieInput, PredictionResponse, ScenarioResponse } from "./types";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -45,4 +45,11 @@ export function getGenreTrends(): Promise<GenreTrendResponse> {
 
 export function getModelInfo(): Promise<ModelInfo> {
   return request<ModelInfo>("/model-info");
+}
+
+export function generateLlmInsights(payload: LlmInsightRequest): Promise<LlmInsightResponse> {
+  return request<LlmInsightResponse>("/llm-insights", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
 }

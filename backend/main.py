@@ -1,18 +1,22 @@
 import os
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import joblib
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
 from pydantic import BaseModel, Field
 
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model" / "movie_hit_model_package.joblib"
 DATA_PATH = BASE_DIR / "data" / "movie_statistic_dataset.csv"
+load_dotenv(BASE_DIR / ".env")
 # Compatibility defaults for leakage-prone fields retained by the saved pipeline.
 # These are training-set means, so the hidden fields have near-zero standardized contribution.
 DEFAULT_AVERAGE_RATING = 6.39745053
@@ -108,6 +112,44 @@ class PredictionResponse(BaseModel):
 class ScenarioRequest(BaseModel):
     original: PredictionInput
     adjusted: PredictionInput
+
+
+class LlmMovieInput(BaseModel):
+    productionBudget: Optional[float] = None
+    runtime: Optional[float] = None
+    releaseYear: Optional[int] = None
+    directorAge: Optional[float] = None
+    primaryGenre: Optional[str] = None
+    directorProfessions: Optional[Union[str, List[str]]] = None
+    budgetCategory: Optional[str] = None
+
+
+class LlmPredictionOutput(BaseModel):
+    hitProbability: Optional[float] = None
+    classification: Optional[str] = None
+    threshold: Optional[float] = None
+    riskLevel: Optional[str] = None
+    modelName: Optional[str] = None
+    businessInterpretation: Optional[str] = None
+
+
+class LlmGenreTrendContext(BaseModel):
+    hitRate: Optional[float] = None
+    averageGrossMargin: Optional[float] = None
+    averageProductionBudget: Optional[float] = None
+    sampleSize: Optional[int] = None
+    yearGroup: Optional[str] = None
+
+
+class LlmInsightsRequest(BaseModel):
+    movieInput: LlmMovieInput
+    prediction: LlmPredictionOutput
+    genreTrend: Optional[LlmGenreTrendContext] = None
+    projectContext: Optional[str] = None
+
+
+class LlmInsightsResponse(BaseModel):
+    insight: str
 
 
 def ensure_model_loaded() -> Dict[str, Any]:
@@ -248,6 +290,64 @@ def predict_scenarios(request: ScenarioRequest) -> Dict[str, Any]:
         "probability_change": round(delta, 4),
         "interpretation": interpretation,
     }
+
+
+def build_llm_prompt(request: LlmInsightsRequest) -> str:
+    compact_summary = {
+        "movieInput": request.movieInput.dict(exclude_none=True),
+        "prediction": request.prediction.dict(exclude_none=True),
+        "genreTrend": request.genreTrend.dict(exclude_none=True) if request.genreTrend else None,
+        "projectContext": request.projectContext,
+    }
+
+    return (
+        "You are interpreting the output of a movie hit prediction machine learning model.\n\n"
+        "Write exactly 5 sentences.\n\n"
+        "Project context:\n"
+        "This is a Movie Hit Predictor portfolio project for early-stage movie investment screening. "
+        "The model estimates whether a movie profile has a strong probability of reaching a profitable gross margin threshold. "
+        "A movie is classified as a Hit when gross margin is at least 0.40. "
+        "The model uses features such as production budget, runtime, release timing, genre, and director profile. "
+        "The LLM should only interpret the current prediction output and should not change the model result.\n\n"
+        "Current movie input and model output:\n"
+        f"{json.dumps(compact_summary, indent=2)}\n\n"
+        "Requirements:\n"
+        "1. Use a clear, grounded business analytics tone.\n"
+        "2. Explain what the current prediction implies for movie investment screening.\n"
+        "3. Mention probability, risk level, threshold, and uncertainty if relevant.\n"
+        "4. Do not claim that the movie will definitely be a hit or flop.\n"
+        "5. Do not invent numbers or facts not provided in the model output.\n"
+        "6. Do not recommend changing the prediction result.\n"
+        "7. Keep the output to exactly 5 sentences."
+    )
+
+
+@app.post("/llm-insights", response_model=LlmInsightsResponse)
+def llm_insights(request: LlmInsightsRequest) -> LlmInsightsResponse:
+    if not request.prediction or request.prediction.hitProbability is None:
+        raise HTTPException(status_code=400, detail="Prediction output is required.")
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not configured.")
+
+    try:
+        client = OpenAI(api_key=api_key)
+        response = client.responses.create(
+            model="gpt-5.4-mini",
+            input=build_llm_prompt(request),
+            temperature=0.2,
+            max_output_tokens=220,
+        )
+    except Exception as exc:
+        print(f"OpenAI insight generation failed: {type(exc).__name__}")
+        raise HTTPException(status_code=502, detail="Unable to generate LLM insights. Please check the backend API key, quota, or server logs.") from exc
+
+    insight = getattr(response, "output_text", "").strip()
+    if not insight:
+        raise HTTPException(status_code=502, detail="Unable to generate LLM insights. Please check the backend API key, quota, or server logs.")
+
+    return LlmInsightsResponse(insight=insight)
 
 
 def infer_release_year(df: pd.DataFrame) -> Optional[pd.Series]:

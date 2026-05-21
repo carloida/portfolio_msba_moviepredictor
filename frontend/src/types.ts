@@ -40,6 +40,38 @@ export type GenreTrendResponse = {
   data: GenreTrendRecord[];
 };
 
+export type LlmInsightRequest = {
+  movieInput: {
+    productionBudget: number;
+    runtime: number;
+    releaseYear: number;
+    directorAge: number;
+    primaryGenre: string;
+    directorProfessions: string;
+    budgetCategory: string;
+  };
+  prediction: {
+    hitProbability: number;
+    classification: string;
+    threshold: number;
+    riskLevel: string;
+    modelName: string;
+    businessInterpretation: string;
+  };
+  genreTrend?: {
+    hitRate: number;
+    averageGrossMargin: number;
+    averageProductionBudget: number;
+    sampleSize: number;
+    yearGroup: string;
+  };
+  projectContext: string;
+};
+
+export type LlmInsightResponse = {
+  insight: string;
+};
+
 export type ModelInfo = {
   model_name: string;
   threshold: number;

@@ -185,7 +185,61 @@ Backend:
 
 ```text
 FRONTEND_ORIGIN=https://your-vercel-app.vercel.app
+OPENAI_API_KEY=your_api_key_here
 ```
+
+## LLM Insights Environment Setup
+
+The LLM Insights feature is served by the FastAPI backend. The frontend never calls OpenAI directly and does not need an OpenAI API key.
+
+Local backend setup:
+
+Save the OpenAI API key in:
+
+```text
+backend/.env
+```
+
+with:
+
+```text
+OPENAI_API_KEY=your_api_key_here
+```
+
+For this local Codex workspace, the same API key value can be copied from the QRM project file:
+
+```text
+C:\Users\carlo\Documents\Codex\2026-05-21\you-are-working-on-my-github\portfolio_msba_QRMportfolio\.env.local
+```
+
+The key itself must not be committed, printed, or hard coded.
+
+Frontend setup:
+
+```text
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+Backend deployment:
+
+- Render: add `OPENAI_API_KEY` in backend service environment variables.
+- Railway: add `OPENAI_API_KEY` in backend service variables.
+- Fly.io: run `fly secrets set OPENAI_API_KEY=...`.
+- Hugging Face Spaces: add `OPENAI_API_KEY` in repository secrets.
+
+Vercel frontend:
+
+Do not add `OPENAI_API_KEY` to Vercel. Only add:
+
+```text
+VITE_API_BASE_URL=https://your-backend-url.com
+```
+
+Security warning:
+
+- Do not use `VITE_OPENAI_API_KEY`.
+- Do not hard code API keys.
+- Do not commit `backend/.env`.
 
 ## Folder Structure
 

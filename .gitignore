@@ -7,6 +7,12 @@ frontend/vite.config.d.ts
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+.env
+.env.*
+.env.local
+.env*.local
+backend/.env
+backend/.env.*
 
 # Python
 __pycache__/
