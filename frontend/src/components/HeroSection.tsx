@@ -44,9 +44,9 @@ export default function HeroSection() {
           <div className="grid gap-4 p-6 sm:grid-cols-2">
             {[
               ["Target", "Gross margin >= 40%"],
-              ["Prediction", "Likely Hit vs Likely Flop"],
-              ["Use case", "Early concept screening"],
-              ["Trend view", "Historical genre performance"]
+              ["Chosen model", "Elastic-Net Logistic Regression"],
+              ["Validation AUC", "0.8244"],
+              ["Final threshold", "0.45 cost-sensitive cutoff"]
             ].map(([label, value]) => (
               <div key={label} className="rounded-lg border border-line bg-panel p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>

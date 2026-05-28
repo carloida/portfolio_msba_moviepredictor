@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
+import ModelBriefingSection from "./components/ModelBriefingSection";
 import MovieInputForm, { defaultMovieInput } from "./components/MovieInputForm";
 import PredictionResultCard from "./components/PredictionResultCard";
 import LlmInsightsCard, { buildLlmInsightPayload } from "./components/LlmInsightsCard";
@@ -92,6 +93,7 @@ export default function App() {
       <Navbar />
       <main>
         <HeroSection />
+        <ModelBriefingSection />
         <section id="prediction" className="section-shell grid gap-6 py-12 lg:grid-cols-[1.15fr_0.85fr]">
           <MovieInputForm value={movieInput} onChange={handleMovieInputChange} onSubmit={handlePredict} loading={loading} />
           <div className="grid gap-6">

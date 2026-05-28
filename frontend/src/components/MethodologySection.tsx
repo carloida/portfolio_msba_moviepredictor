@@ -9,7 +9,15 @@ const sections = [
   },
   {
     title: "Modeling Approach",
-    body: "The portfolio app uses early-stage screening fields such as budget, runtime, genre, timing, and director profile features. Categorical variables are encoded, numeric variables are processed, LASSO-based selection is used to keep the most relevant features, and the final classifier is selected based on validation performance."
+    body: "The portfolio app uses early-stage screening fields such as budget, runtime, genre, timing, and director profile features. Numeric fields are standardized, categorical variables are one-hot encoded, and LassoCV narrows 286 processed columns to 21 selected predictors."
+  },
+  {
+    title: "Models Compared",
+    body: "The report trained L2 and Elastic-Net Logistic Regression models, each with weighted and unweighted variants, and compared them against weighted and unweighted LightGBM classifiers."
+  },
+  {
+    title: "Validation and Threshold",
+    body: "Model selection is based on validation ROC-AUC. The final operating threshold is 0.45, chosen from a cost-sensitive loss that treats missed profitable films as more costly than false positives."
   },
   {
     title: "Why Some Fields Are Excluded",

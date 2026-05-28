@@ -1,9 +1,10 @@
 const limitations = [
-  "The model is trained on historical data.",
-  "It estimates probability, not certainty.",
-  "It does not know future audience behavior unless external future trend data is added.",
+  "The model is trained on historical movie data, so it estimates probability rather than certainty.",
+  "Marketing spend, distribution strategy, theatrical competition, streaming exposure, and cultural events are not included.",
+  "Approval index and vote count are used as early-feedback proxies, but true pre-release deployment should use test-screening results or pre-launch engagement.",
   "Genre trends are historical summaries, not guaranteed forecasts.",
-  "Streaming behavior, marketing spend, competition, distribution, and cultural events may affect actual performance."
+  "Future improvements should add social media signals, plot or script features, cast-marketability features, and periodic retraining as new films are released.",
+  "A production version should monitor model drift and refresh the pipeline through scheduled batch updates or MLOps automation."
 ];
 
 export default function ModelLimitationsCard() {
