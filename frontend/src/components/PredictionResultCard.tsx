@@ -14,13 +14,13 @@ export default function PredictionResultCard({ movieInput, prediction, loading, 
   const chartData = [{ name: "Probability", value: probability }];
 
   return (
-    <aside className="card flex min-h-[520px] flex-col overflow-hidden">
-      <div className="relative min-h-[220px]">
+    <aside className="card flex flex-col overflow-hidden">
+      <div className="relative min-h-[170px]">
         <img src={imageForGenre(movieInput.primary_genre)} alt={`${displayGenre(movieInput.primary_genre)} genre artwork`} className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
-        <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-5 text-white sm:p-6">
+        <div className="relative z-10 flex min-h-[170px] flex-col justify-end p-5 text-white">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">Prediction Result</p>
-          <h2 className="mt-2 text-3xl font-bold">{displayGenre(movieInput.primary_genre)} investment screen</h2>
+          <h2 className="mt-2 text-2xl font-bold">{displayGenre(movieInput.primary_genre)} investment screen</h2>
           <div className="mt-4 grid grid-cols-3 gap-2">
             <OverlayMetric label="Year" value={String(movieInput.release_year)} />
             <OverlayMetric label="Budget" value={formatMoney(movieInput.production_budget)} />
@@ -29,7 +29,7 @@ export default function PredictionResultCard({ movieInput, prediction, loading, 
         </div>
       </div>
 
-      <div className="border-b border-line p-5 sm:p-6">
+      <div className="border-b border-line p-4 sm:p-5">
         <p className="text-sm leading-6 text-muted">
           Results are calibrated against the model decision threshold, not against guaranteed box office outcomes.
         </p>
@@ -57,17 +57,17 @@ export default function PredictionResultCard({ movieInput, prediction, loading, 
       )}
 
       {prediction && !loading && (
-        <div className="flex flex-1 flex-col gap-5 p-5 sm:p-6">
-          <div className="rounded-lg bg-nusNavy p-6 text-white">
+        <div className="flex flex-col gap-4 p-4 sm:p-5">
+          <div className="rounded-lg bg-nusNavy p-5 text-white">
             <p className="text-sm font-semibold text-white/70">Hit probability</p>
             <div className="mt-3 flex items-end justify-between gap-4">
-              <p className="text-6xl font-bold">{probability}%</p>
+              <p className="text-5xl font-bold">{probability}%</p>
               <span className="rounded-lg bg-white px-3 py-2 text-sm font-bold text-nusNavy">{prediction.prediction_label}</span>
             </div>
           </div>
-          <div className="h-32">
+          <div className="h-12">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 12, top: 15, bottom: 10 }}>
+              <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 42, top: 8, bottom: 8 }}>
                 <XAxis type="number" domain={[0, 100]} hide />
                 <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={28}>
                   <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}%`} className="fill-nusNavy text-sm font-bold" />
@@ -104,9 +104,9 @@ function OverlayMetric({ label, value }: { label: string; value: string }) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-line bg-white p-4">
+    <div className="rounded-lg border border-line bg-white p-3">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
-      <p className="mt-2 text-sm font-bold text-ink">{value}</p>
+      <p className="mt-1 text-sm font-bold text-ink">{value}</p>
     </div>
   );
 }

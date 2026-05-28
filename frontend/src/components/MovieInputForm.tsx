@@ -2,6 +2,7 @@ import { FormEvent } from "react";
 import type { ReactNode } from "react";
 import { displayGenre, formatMoney, genreOptions, imageForGenre } from "../genreAssets";
 import type { MovieInput } from "../types";
+import BudgetDistributionCard from "./BudgetDistributionCard";
 
 export const defaultMovieInput: MovieInput = {
   production_budget: 12_000_000,
@@ -80,12 +81,12 @@ export default function MovieInputForm({ value, onChange, onSubmit, loading }: P
   }
 
   return (
-    <form onSubmit={submit} className="card p-5 sm:p-6">
+    <form onSubmit={submit} className="card p-4 sm:p-5">
       <div className="overflow-hidden rounded-lg border border-line bg-nusNavy">
-        <div className="relative min-h-[210px]">
+        <div className="relative min-h-[190px]">
           <img src={imageForGenre(value.primary_genre)} alt={`${displayGenre(value.primary_genre)} genre artwork`} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
-          <div className="relative z-10 flex min-h-[210px] flex-col justify-end p-5 text-white">
+          <div className="relative z-10 flex min-h-[190px] flex-col justify-end p-5 text-white">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">Movie Hit Prediction</p>
             <h2 className="mt-2 text-3xl font-bold">{displayGenre(value.primary_genre)} profile</h2>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
@@ -97,13 +98,13 @@ export default function MovieInputForm({ value, onChange, onSubmit, loading }: P
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 border-b border-line pb-5">
+      <div className="mt-4 flex flex-col gap-2 border-b border-line pb-4">
         <p className="text-sm leading-6 text-muted">
           Enter information that could reasonably be known before release or at early investment review.
         </p>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {sampleProfiles.map((profile) => (
           <button
             type="button"
@@ -116,7 +117,11 @@ export default function MovieInputForm({ value, onChange, onSubmit, loading }: P
         ))}
       </div>
 
-      <div className="mt-6 grid gap-5 md:grid-cols-2">
+      <div className="mt-4">
+        <BudgetDistributionCard budget={value.production_budget} genre={value.primary_genre} releaseYear={value.release_year} />
+      </div>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         <FieldShell label="Production Budget" help="Estimated production cost before box office returns.">
           <div className="flex items-center gap-3">
             <input className="w-full" type="range" min={100000} max={250000000} step={100000} value={value.production_budget} onChange={(e) => update("production_budget", Number(e.target.value))} />

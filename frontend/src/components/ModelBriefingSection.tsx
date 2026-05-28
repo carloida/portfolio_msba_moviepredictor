@@ -33,8 +33,9 @@ export default function ModelBriefingSection() {
   return (
     <section id="model-briefing" className="border-b border-line bg-white py-12">
       <div className="section-shell">
-        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-          <div>
+        <div className="grid gap-6">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.86fr)] lg:items-end">
+            <div>
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-nusOrange">Model selection brief</p>
             <h2 className="mt-3 text-3xl font-bold leading-tight text-nusNavy sm:text-4xl">
               Why the app uses Elastic-Net Logistic Regression
@@ -44,38 +45,16 @@ export default function ModelBriefingSection() {
               The unweighted Elastic-Net Logistic Regression achieved the highest validation AUC while remaining easy to
               explain, so it was selected as the final classifier.
             </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-line bg-panel p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Chosen model</p>
-                <p className="mt-2 text-lg font-bold text-nusNavy">Elastic Net</p>
-              </div>
-              <div className="rounded-lg border border-line bg-panel p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Validation AUC</p>
-                <p className="mt-2 text-lg font-bold text-nusNavy">0.8244</p>
-              </div>
-              <div className="rounded-lg border border-line bg-panel p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">Test AUC</p>
-                <p className="mt-2 text-lg font-bold text-nusNavy">0.7922</p>
-              </div>
             </div>
 
-            <div className="mt-6 rounded-lg border border-orange-200 bg-orange-50 p-5">
-              <div className="flex items-start gap-3">
-                <Target className="mt-0.5 shrink-0 text-nusOrange" size={22} />
-                <div>
-                  <h3 className="font-bold text-ink">AUC in plain language</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted">
-                    ROC-AUC measures how well a model ranks likely hits above likely flops across all possible
-                    thresholds. A score of 0.5 is close to random ranking; scores closer to 1.0 indicate stronger
-                    discrimination before choosing a final decision cutoff.
-                  </p>
-                </div>
-              </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <MetricTile label="Chosen model" value="Elastic Net" />
+              <MetricTile label="Validation AUC" value="0.8244" />
+              <MetricTile label="Test AUC" value="0.7922" />
             </div>
           </div>
 
-          <div className="grid gap-5">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.74fr)] lg:items-stretch">
             <div className="overflow-hidden rounded-lg border border-line bg-white shadow-soft">
               <div className="flex items-center gap-3 border-b border-line bg-nusNavy px-5 py-4 text-white">
                 <BarChart3 size={22} />
@@ -111,19 +90,32 @@ export default function ModelBriefingSection() {
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <BriefCard
-                icon={<CheckCircle2 className="text-nusOrange" size={22} />}
-                items={pipelineSteps}
-                title="Validation Design"
-              />
-              <BriefCard
-                icon={<AlertTriangle className="text-nusOrange" size={22} />}
-                items={limitations}
-                title="Study Limitations"
-              />
+            <div className="rounded-lg border border-orange-200 bg-orange-50 p-5">
+              <div className="flex items-start gap-3">
+                <Target className="mt-0.5 shrink-0 text-nusOrange" size={22} />
+                <div>
+                  <h3 className="font-bold text-ink">AUC in plain language</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">
+                    ROC-AUC measures how well a model ranks likely hits above likely flops across all possible
+                    thresholds. A score of 0.5 is close to random ranking; scores closer to 1.0 indicate stronger
+                    discrimination before choosing a final decision cutoff.
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
 
+          <div className="grid gap-4 lg:grid-cols-3">
+            <BriefCard
+              icon={<CheckCircle2 className="text-nusOrange" size={22} />}
+              items={pipelineSteps}
+              title="Validation Design"
+            />
+            <BriefCard
+              icon={<AlertTriangle className="text-nusOrange" size={22} />}
+              items={limitations}
+              title="Study Limitations"
+            />
             <BriefCard
               icon={<Lightbulb className="text-nusOrange" size={22} />}
               items={recommendations}
@@ -136,9 +128,18 @@ export default function ModelBriefingSection() {
   );
 }
 
+function MetricTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-line bg-panel p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
+      <p className="mt-2 text-lg font-bold text-nusNavy">{value}</p>
+    </div>
+  );
+}
+
 function BriefCard({ icon, items, title }: { icon: JSX.Element; items: string[]; title: string }) {
   return (
-    <article className="rounded-lg border border-line bg-panel p-5">
+    <article className="h-full rounded-lg border border-line bg-panel p-5">
       <div className="flex items-center gap-3">
         {icon}
         <h3 className="font-bold text-nusNavy">{title}</h3>

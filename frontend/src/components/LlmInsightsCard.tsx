@@ -28,8 +28,8 @@ export default function LlmInsightsCard({
 
   return (
     <>
-      <section className="card p-5 sm:p-6">
-        <div className="flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-start sm:justify-between">
+      <section className="card p-4 sm:p-5">
+        <div className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-nusOrange">LLM Insights</p>
             <h2 className="mt-2 text-2xl font-bold text-nusNavy">LLM Insights</h2>
@@ -44,7 +44,7 @@ export default function LlmInsightsCard({
           </button>
         </div>
 
-        <div className="mt-5 grid gap-4">
+        <div className="mt-4 grid gap-3">
           {!prediction && (
             <p className="rounded-lg border border-dashed border-line bg-panel p-4 text-sm leading-6 text-muted">
               Run a prediction first to generate LLM insights.
